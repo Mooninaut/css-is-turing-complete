@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>CSS3 Animations are Turing Complete</title>
+  <style>
+    @keyframes bit-move {
+      0% { left: 100px; }
+      50% { left: 200px; }
+      100% { left: 100px; }
+    }
+    .bit {
+      animation-name: bit-move;
+      animation-duration: 2s;
+      animation-timing-function: steps(1);
+      animation-fill-mode: none;
+      animation-iteration-count: infinite;
+      height: 25px;
+      width: 100px;
+      position: absolute;
+      background-color: lightblue;
+      pointer-events: all;
+      line-height: 24px;
+    }
+    .bit.one {
+      animation-delay: 1s;
+    }
+    .bit-container {
+      left: 50px;
+      top: 50px;
+      width: 300px;
+      height: 50px;
+      border: 1px solid black;
+      line-height: 49px;
+      text-align: center;
+      vertical-align: middle;
+      position: absolute;
+      pointer-events: none;
+      z-index: 100;
+      background: white;
+    }
+    @keyframes pause {
+      from { height: 50px; }
+      to { height: 49px; }
+    }
+    .left-pause {
+      width: 100px;
+      height: 49px;
+      background-color: lightgray;
+      position: absolute;
+      pointer-events: all;
+      animation-name: pause;
+      animation-duration: 2s;
+      animation-iteration-count: infinite;
+      animation-timing-function: steps(1);
+    }
+    .left-pause:hover ~ .bit {
+      animation-play-state: paused;
+    }
+
+    .bit.top {
+      position: absolute;
+      pointer-events: all;
+      animation-name: bit-top 2s infinite linear, bit-move 2s infinite steps(1);
+      top: 0;
+    }
+    .bit.top:hover, .bit.top:hover ~ .bit.bottom {
+      background-color: yellow;
+      animation-play-state: paused;
+    }
+    .bit.bottom {
+      top: 25px;
+    }
+    .bit.bottom:hover {
+      background-color: burlywood;
+    }
+
+    @keyframes lable-blink {
+      0% { color: white; }
+      50% { color: black; }
+    }
+    .label {
+      width: 100px;
+      height: 49px;
+      position: absolute;
+      top: 0;
+      animation-name: lable-blink;
+      animation-duration: 2s;
+      animation-iteration-count: infinite;
+      animation-timing-function: steps(1);
+    }
+    .label-0 {
+      left: 100px;
+    }
+    .label-1 {
+      left: 200px;
+    }
+    @keyframes bit-a-path {
+      0% { left: 500px; top: 300px; } /* tick: hold 0 for 0, set 1 */
+      20% { left: 0; top: 0; } /* tock */
+      40% { left: 0; top: 0; } /* tick */
+      60% { left: 0; top: 0; } /* tock */
+      80% { left: 400px; top: 275px; } /* tick: input for NAND */
+    }
+    #bit-a {
+      top: 0px;
+      animation: bit-a-path 5s steps(1) 0s infinite;
+
+    }
+    @keyframes bit-b-path {
+      0% { left: 0; top: 150px;} /* tick */
+      20% { left: 400px; top: 300px; } /* tock: hold 1 for 1, set 1 */
+      40% { left: 0; top: 150px;} /* tick */
+      60% { left: 0; top: 150px; } /* tock*/
+      80% { left: 400px; top: 275px; } /* tick: input for NAND */
+    }
+    #bit-b {
+      top: 150px;
+      animation: bit-b-path 5s steps(1) 0s infinite;
+    }
+    @keyframes bit-c-path {
+      0% { left: 0; top: 300px;} /* tick */
+      20% { left: 0; top: 300px; } /* tock */
+      40% {left: 500px; top: 300px; } /* tick: hold 0 for 0, set 1 */
+      60% { left: 0; top: 300px; } /* tock */
+      80% { left: 600px; top: 300px; } /* tick: output for NAND */
+    }
+    #bit-c {
+      top: 300px;
+      animation: bit-c-path 5s steps(1) 0s infinite;
+    }
+    @keyframes mouse-target-wiggle {
+      0% { height: 25px; }
+      50% { height: 24px; }
+    }
+    #mouse-target {
+      width: 100px;
+      height: 25px;
+      animation: mouse-target-wiggle 2s infinite;
+      line-height: 24.5px;
+      vertical-align: middle;
+      text-align: center;
+      left: 600px;
+      top: 300px;
+      position: absolute;
+      font-size: small;
+      border: 1px solid black;
+      z-index: 1;
+    }
+  </style>
+</head>
+<body>
+  <div id="bit-a" class="bit-container">
+    <div class="left-pause">
+      Pause
+    </div>
+    <div class="label-0 label">0</div>
+    <div class="label-1 label">1</div>
+    <div class="bit top"></div>
+    <div class="bit bottom">Bit A</div>
+  </div>
+  <div id="bit-b" class="bit-container">
+    <div class="left-pause">
+      Pause
+    </div>
+    <div class="label-0 label">0</div>
+    <div class="label-1 label">1</div>
+    <div class="bit top"></div>
+    <div class="bit bottom">Bit B</div>
+  </div>
+  <div id="bit-c" class="bit-container">
+    <div class="left-pause">
+      Pause
+    </div>
+    <div class="label-0 label">0</div>
+    <div class="label-1 label">1</div>
+    <div class="bit top"></div>
+    <div class="bit bottom">Bit C</div>
+  </div>
+  <div id="mouse-target">MOUSE HERE</div>
+</body>
+</html>

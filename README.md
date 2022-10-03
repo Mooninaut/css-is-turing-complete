@@ -2,13 +2,21 @@
 
 ## Introduction
 
+It is, as of October 2022, [considered an open question](https://stackoverflow.com/questions/2497146/is-css-turing-complete) whether or not CSS is Turing complete.
+
 There have been a number of previous attempts to prove that CSS3 either is, or is not, Turing complete.
 
-Previous attempts to prove that it is were unsatisfactory because they required interactive human involvement, circumstances under which a piece of paper and a pencil, or indeed a beach full of rocks can be considered Turing-complete.
+[Previous attempts](https://notlaura.com/is-css-turing-complete/) to prove that it was were unsatisfactory, because they required interactive human involvement, circumstances under which a piece of paper and a pencil, or indeed a [desert full of rocks](https://xkcd.com/505/) can be considered Turing-complete.
 
-This repository provides a definitive answer: Once set in motion, a CSS3 computation can proceed without further human involvement to calculate the output of any Boolean circuit with any fixed input.
+This repository provides a definitive answer with no caveats: Once set in motion, a CSS3 computation can proceed without further human involvement to calculate the output of any finite Boolean circuit, with any fixed input.
 
-The user need only move the mouse into the box labeled "MOUSE HERE" and wait. The input bits will be set, and their sum with carry computed automatically. If desired, the mouse can be set aside, or even turned off during the computation to ensure no trickery.
+[The sample animation](https://mooninaut.github.io/css3-is-turing-complete/adder.html) implements a full binary adder using two XOR, two AND and one OR.
+
+The animation does not use JavaScript, images, SVG, or indeed anything other than simple HTML and relatively straightforward CSS3 Animation.
+
+The user need only move the mouse into the box labeled "MOUSE HERE" and wait. The input bits will be set, and their sum with carry computed automatically. If desired, the mouse can be set aside, or even turned off during the computation.
+
+The inputs are currently hard-coded to add 1, 1, and 1 to get 3 (11b). You can download the HTML file and change the inputs by altering the lines labeled `set a`, `set b`, and `set c` in comments.
 
 ## Mechanism
 

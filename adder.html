@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>CSS3 Animations are Turing Complete</title>
+<!-- 
+cycles:
+#### TICK ####
+during a "0" half-cycle (tick)
+a 0 is left  (blocks left,  permits right)
+a 1 is right (blocks right, permits left)
+
+to set 0, hold right during "0", a 0 will be unaffected and a 1 will be delayed
+ left: var(--active-right); top: var(--accept-input-top); z-index: var(--accept-input-z); 
+
+to set 1, hold left during "0" (tick)
+ left: var(--active-left); top: var(--accept-input-top); z-index: var(--accept-input-z); 
+
+XOR is left over pause 
+ left: var(--active-left); top: var(--perform-output-top); z-index: var(--perform-output-z); 
+
+AND is set receiver to 0 on tock, then
+both inputs 1 activate pause (left over) toggles if both are 1
+ left: var(--active-left); top: var(--perform-output-top); z-index: var(--perform-output-z); 
+
+OR is set receiver to 1 on tock, then
+both inputs 0 activate pause (right over) toggles if both are 0
+ left: var(--active-right); top: var(--perform-output-top); z-index: var(--perform-output-z); 
+#### TOCK ####
+
+during a "1" half-cycle (tock)
+a 1 is left  (blocks left,  permits right)
+a 0 is right (blocks right, permits left)
+
+To set 0
+ left: var(--active-left); top: var(--accept-input-top); z-index: var(--accept-input-z); 
+
+To set 1
+ left: var(--active-right); top: var(--accept-input-top); z-index: var(--accept-input-z); 
+
+XOR is right over pause 
+ left: var(--active-right); top: var(--perform-output-top); z-index: var(--perform-output-z); 
+
+AND is set receiver 0 on tick, then
+both inputs 1 activate pause (right over) toggles if both are 1
+ left: var(--active-right); top: var(--perform-output-top); z-index: var(--perform-output-z); 
+
+ OR is set receiver to 1 on tick, then
+both inputs 0 activate pause (left over) toggles if both are 0
+ left: var(--active-left); top: var(--perform-output-top); z-index: var(--perform-output-z); 
+
+accept left:  top: var(--accept-input-top); left: var(--active-left); z-index: var(--accept-input-z); 
+accept right: top: var(--accept-input-top); left: var(--active-right); z-index: var(--accept-input-z); 
+accept pause: top: var(--accept-input-top); left: var(--active-pause); z-index: var(--accept-input-z); 
+
+perform left:  top: var(--perform-output-top); left: var(--active-left); z-index: var(--perform-output-z); 
+perform right: top: var(--perform-output-top); left: var(--active-right); z-index: var(--perform-output-z); 
+
+display:
+cycle "0" "1"
+left   1   0
+right  0   1
+
+start with 1st xor
+
+4 repeats, 00 01 10 11
+
+set values
+set a (0 0 1 1)
+set b (0 1 0 1)
+set temp1 (0 0 0 0)
+
+hang out at top showing values for 4s
+set temp1 to a
+xor b onto temp1
+hang out at top showing values for 4s
+
+code
+a = ? (0)
+b = ? (1)
+c = ? (2)
+temp1 = a xor b (3,4)
+Sum  = t1 xor c (5,6)
+temp2 = t1 and c (7,8)
+temp3 = a and b (9,10)
+Carry  = t2 or t3 (11, 12)
+
+-->
+  <style>
+    :root {
+      --main-loop-duration: 100s;
+      --half-cycle-duration: 1s;
+      --full-cycle-duration: 2s;
+      --wiggle-duration: 2s;
+      --input-a-home: 25px;
+      --input-b-home: 100px;
+      --input-c-home: 175px;
+      --temp-1-home: 250px;
+      --temp-2-home: 325px;
+      --temp-3-home: 400px;
+      --sum-home: 475px;
+      --carry-home: 550px;
+      --box-width: 100px;
+      --box-height: 25px;
+      --active-pause: 600px;
+      --active-left: calc(var(--active-pause) - var(--box-width));
+      --active-right: calc(var(--active-pause) - 2 * var(--box-width));
+      --accept-input-top: 500px;
+      --perform-output-top: calc(var(--accept-input-top) - var(--box-height));
+      --bit-left: var(--box-width);
+      --bit-right: calc(2 * var(--box-width));
+      --container-width: calc(3 * var(--box-width));
+      --container-height: calc(2 * var(--box-height));
+      --perform-output-z: 1000;
+      --accept-input-z: 500;
+    }
+    @keyframes bit-move {
+      0% { left: var(--bit-left); }
+      50% { left: var(--bit-right); }
+      100% { left: var(--bit-left); }
+    }
+    @keyframes pause {
+      from { height: var(--container-height); }
+      to { height: calc(var(--container-height) - 1px); }
+    }
+    @keyframes label-blink {
+      0% { color: white; }
+      50% { color: black; }
+    }
+    @keyframes bit-a-path {
+      0% { left: var(--active-left); top: var(--accept-input-top); z-index: var(--perform-output-z); } /* tick: set 1 */
+      1% { left: 0; top: var(--input-a-home); } /* tock */
+      2% { left: 0; top: var(--input-a-home); } /* tick */
+      3% { left: var(--active-right); top: var(--perform-output-top); z-index: var(--perform-output-z); } /* tock: xor onto temp1 */
+      4% { left: 0; top: var(--input-a-home); } /* tick */
+      5% { left: 0; top: var(--input-a-home); } /* tock */
+      6% { left: 0; top: var(--input-a-home); } /* tick */
+      7% { left: 0; top: var(--input-a-home); } /* tock */
+      8% { left: 0; top: var(--input-a-home); } /* tick */
+      9% { left: 0; top: var(--input-a-home); } /* tock */
+      10% { left: var(--active-left); top: var(--perform-output-top); z-index: var(--perform-output-z); } /* tick */
+      11% { left: 0; top: var(--input-a-home); } /* tock */
+      12% { left: 0; top: var(--input-a-home); } /* tick */
+      13% { left: 0; top: var(--input-a-home); } /* tock */
+    }
+    @keyframes bit-b-path {
+      0% { left: 0; top: var(--input-b-home);} /* tick */
+      1% { left: var(--active-right); top: var(--accept-input-top); z-index: var(--perform-output-z); } /* tock: set 0 */
+      2% { left: 0; top: var(--input-b-home);} /* tick */
+      3% { left: 0; top: var(--input-b-home); } /* tock*/
+      4% { left: var(--active-left); top: var(--perform-output-top); z-index: var(--perform-output-z); } /* tick: xor onto temp1 */
+      5% { left: 0; top: var(--input-b-home); } /* tock*/
+      6% { left: 0; top: var(--input-b-home); } /* tick */
+      7% { left: 0; top: var(--input-b-home); } /* tock*/
+      8% { left: 0; top: var(--input-b-home); } /* tick */
+      9% { left: 0; top: var(--input-b-home); } /* tock*/
+      10% { left: var(--active-left); top: var(--perform-output-top); z-index: var(--perform-output-z); } /* tick */
+      11% { left: 0; top: var(--input-b-home); } /* tock*/
+      12% { left: 0; top: var(--input-b-home); } /* tick */
+      13% { left: 0; top: var(--input-b-home); } /* tock*/
+    }
+    @keyframes bit-c-path {
+      0% { left: 0; top: var(--input-c-home);} /* tick */
+      1% { left: 0; top: var(--input-c-home); } /* tock */
+      2% { left: var(--active-left); top: var(--accept-input-top); z-index: var(--perform-output-z); } /* tick: set 1 */
+      3% { left: 0; top: var(--input-c-home); } /* tock */
+      4% { left: 0; top: var(--input-c-home); } /* tick */
+      5% { left: 0; top: var(--input-c-home); } /* tock */
+      6% { left: var(--active-left); top: var(--perform-output-top); z-index: var(--perform-output-z); } /* tick: xor onto Sum */
+      7% { left: 0; top: var(--input-c-home); } /* tock */
+      8% { left: var(--active-left); top: var(--perform-output-top); z-index: var(--perform-output-z); } /* tick: temp-2 = temp-1 AND c */
+      9% { left: 0; top: var(--input-c-home); } /* tock */
+      10% { left: 0; top: var(--input-c-home); } /* tick */
+      11% { left: 0; top: var(--input-c-home); } /* tock */
+      12% { left: 0; top: var(--input-c-home); } /* tick */
+      13% { left: 0; top: var(--input-c-home); } /* tock */
+    }
+    @keyframes bit-temp1-path {
+      0% { left: 0; top: var(--temp-1-home);} /* tick */
+      1% { left: 0; top: var(--temp-1-home); } /* tock */
+      2% { left: 0; top: var(--temp-1-home); } /* tick */
+      3% { left: var(--active-pause); top: var(--accept-input-top); z-index: var(--accept-input-z); } /* tock: accept a xor */
+      4% { left: var(--active-pause); top: var(--accept-input-top); z-index: var(--accept-input-z); } /* tick: accept b xor */
+      5% { left: var(--active-right); top: var(--perform-output-top); z-index: var(--perform-output-z); } /* tock */
+      6% { left: 0; top: var(--temp-1-home); } /* tick */
+      7% { left: 0; top: var(--temp-1-home); } /* tock */
+      8% { left: var(--active-left); top: var(--perform-output-top); z-index: var(--perform-output-z); } /* tick: temp-2 = temp-1 AND c */
+      9% { left: 0; top: var(--temp-1-home); } /* tock */
+      10% { left: 0; top: var(--temp-1-home); } /* tick */
+      11% { left: 0; top: var(--temp-1-home); } /* tock */
+      12% { left: 0; top: var(--temp-1-home); } /* tick */
+      13% { left: 0; top: var(--temp-1-home); } /* tock */
+    }
+
+    @keyframes bit-temp2-path {
+      0% { left: 0; top: var(--temp-2-home);} /* tick */
+      1% { left: 0; top: var(--temp-2-home); } /* tock */
+      2% { left: 0; top: var(--temp-2-home);} /* tick */
+      3% { left: 0; top: var(--temp-2-home); } /* tock */
+      4% { left: 0; top: var(--temp-2-home);} /* tick */
+      5% { left: 0; top: var(--temp-2-home); } /* tock */
+      6% { left: 0; top: var(--temp-2-home); } /* tick */
+      7% { left: var(--active-left); top: var(--accept-input-top); z-index: var(--accept-input-z); } /* tock: set 0 */
+      8% { left: var(--active-pause); top: var(--accept-input-top); z-index: var(--accept-input-z); } /* tick: accept temp-1 AND c */
+      9% { left: 0; top: var(--temp-2-home); } /* tock */
+      10% { left: 0; top: var(--temp-2-home); } /* tick */
+      11% { left: 0; top: var(--temp-2-home); } /* tock */
+      12% { left: var(--active-right); top: var(--perform-output-top); z-index: var(--perform-output-z); } /* tick */
+      13% { left: 0; top: var(--temp-2-home); } /* tock */
+    }
+
+    @keyframes bit-temp3-path {
+      0% { left: 0; top: var(--temp-3-home);} /* tick */
+      1% { left: 0; top: var(--temp-3-home); } /* tock */
+      2% { left: 0; top: var(--temp-3-home);} /* tick */
+      3% { left: 0; top: var(--temp-3-home); } /* tock */
+      4% { left: 0; top: var(--temp-3-home);} /* tick */
+      5% { left: 0; top: var(--temp-3-home); } /* tock */
+      6% { left: 0; top: var(--temp-3-home); } /* tick */
+      7% { left: 0; top: var(--temp-3-home); } /* tock */
+      8% { left: 0; top: var(--temp-3-home); } /* tick */
+      9% { left: var(--active-left); top: var(--accept-input-top); z-index: var(--accept-input-z); } /* tock */
+      10% { left: var(--active-pause); top: var(--accept-input-top); z-index: var(--accept-input-z); } /* tick */
+      11% { left: 0; top: var(--temp-3-home); } /* tock */
+      12% { left: var(--active-right); top: var(--perform-output-top); z-index: var(--perform-output-z); } /* tick */
+      13% { left: 0; top: var(--temp-3-home); } /* tock */
+    }
+
+    @keyframes bit-sum-path {
+      0% { left: 0; top: var(--sum-home);} /* tick */
+      1% { left: 0; top: var(--sum-home); } /* tock */
+      2% { left: 0; top: var(--sum-home); } /* tick */
+      3% { left: 0; top: var(--sum-home); } /* tock */
+      4% { left: 0; top: var(--sum-home); } /* tick */
+      5% { left: var(--active-pause); top: var(--accept-input-top); z-index: var(--accept-input-z); } /* tock: accept a xor */
+      6% { left: var(--active-pause); top: var(--accept-input-top); z-index: var(--accept-input-z); } /* tick: accept b xor */
+      7% { left: 0; top: var(--sum-home); } /* tock */
+      8% { left: 0; top: var(--sum-home);} /* tick */
+      9% { left: 0; top: var(--sum-home); } /* tock */
+      10% { left: 0; top: var(--sum-home); } /* tick */
+      11% { left: 0; top: var(--sum-home); } /* tock */
+      12% { left: 0; top: var(--sum-home); } /* tick */
+      13% { left: 0; top: var(--sum-home); } /* tock */
+    }
+
+    @keyframes bit-carry-path {
+      0% { left: 0; top: var(--carry-home);} /* tick */
+      1% { left: 0; top: var(--carry-home); } /* tock */
+      2% { left: 0; top: var(--carry-home); } /* tick */
+      3% { left: 0; top: var(--carry-home); } /* tock */
+      4% { left: 0; top: var(--carry-home); } /* tick */
+      5% { left: 0; top: var(--carry-home); } /* tock */
+      6% { left: 0; top: var(--carry-home); } /* tick */
+      7% { left: 0; top: var(--carry-home); } /* tock */
+      8% { left: 0; top: var(--carry-home);} /* tick */
+      9% { left: 0; top: var(--carry-home); } /* tock */
+      10% { left: 0; top: var(--carry-home); } /* tick */
+      11% { left: var(--active-right); top: var(--accept-input-top); z-index: var(--accept-input-z); } /* tock */
+      12% { left: var(--active-pause); top: var(--accept-input-top); z-index: var(--accept-input-z); } /* tick */
+      13% { left: 0; top: var(--carry-home); } /* tock */
+    }
+    @keyframes active-box-wiggle {
+      0% { height: var(--box-height); }
+      50% { height: calc(var(--box-height) - 1px); }
+    }
+    .bit {
+      animation-name: bit-move;
+      animation-duration: var(--full-cycle-duration);
+      animation-timing-function: steps(1);
+      animation-fill-mode: none;
+      animation-iteration-count: infinite;
+      height: 25px;
+      width: 100px;
+      font-size: small;
+      position: absolute;
+      background-color: lightblue;
+      pointer-events: all;
+      line-height: calc(var(--box-height) - 1px);
+    }
+    .bit.one {
+      animation-delay: 1s;
+    }
+    .bit-container {
+      left: 0;
+      top: 0;
+      width: var(--container-width);
+      height: var(--container-height);
+      border: 1px solid black;
+      line-height: calc(var(--container-height) - 1px);
+      text-align: center;
+      vertical-align: middle;
+      position: absolute;
+      pointer-events: none;
+      z-index: 100;
+      background: white;
+    }
+
+    .pause-box {
+      width: var(--box-width);
+      height: var(--container-height);
+      font-size: small;
+      background-color: lightgray;
+      position: absolute;
+      pointer-events: all;
+      animation-name: pause;
+      animation-duration: var(--wiggle-duration);
+      animation-iteration-count: infinite;
+      animation-timing-function: steps(1);
+    }
+    .pause-box:hover ~ .bit {
+      animation-play-state: paused;
+    }
+
+    .bit.top {
+      position: absolute;
+      pointer-events: all;
+      animation: bit-top var(--wiggle-duration) infinite linear, bit-move var(--full-cycle-duration) infinite steps(1);
+      top: 0;
+    }
+    .bit.top:hover, .bit.top:hover ~ .bit.bottom {
+      background-color: yellow;
+      animation-play-state: paused;
+    }
+    .bit.bottom {
+      top: var(--box-height);
+    }
+    .bit.bottom:hover {
+      background-color: burlywood;
+    }
+    .label {
+      width: var(--box-width);
+      height: var(--box-height);
+      position: absolute;
+      top: 0;
+      animation-name: label-blink;
+      animation-duration: var(--full-cycle-duration);
+      animation-iteration-count: infinite;
+      animation-timing-function: steps(1);
+    }
+    .label-0 {
+      left: 100px;
+    }
+    .label-1 {
+      left: 200px;
+    }
+
+    #bit-a {
+      top: var(--input-a-home);
+      animation: bit-a-path var(--main-loop-duration) steps(1) 0s infinite;
+
+    }
+
+    #bit-b {
+      top: var(--input-b-home);
+      animation: bit-b-path var(--main-loop-duration) steps(1) 0s infinite;
+    }
+
+    #bit-c {
+      top: var(--input-c-home);
+      animation: bit-c-path var(--main-loop-duration) steps(1) 0s infinite;
+    }
+
+    #bit-temp-1 {
+      top: var(--temp-1-home);
+      animation: bit-temp1-path var(--main-loop-duration) steps(1) 0s infinite;
+    }
+
+    #bit-temp-2 {
+      top: var(--temp-2-home);
+      animation: bit-temp2-path var(--main-loop-duration) steps(1) 0s infinite;
+    }
+
+    #bit-temp-3 {
+      top: var(--temp-3-home);
+      animation: bit-temp3-path var(--main-loop-duration) steps(1) 0s infinite;
+    }
+
+    #bit-sum {
+      top: var(--sum-home);
+      animation: bit-sum-path var(--main-loop-duration) steps(1) 0s infinite;
+    }
+
+    #bit-carry {
+      top: var(--carry-home);
+      animation: bit-carry-path var(--main-loop-duration) steps(1) 0s infinite;
+    }
+
+    #active-box {
+      width: var(--box-width);
+      height: var(--box-height);
+      animation: active-box-wiggle var(--wiggle-duration) infinite linear;
+      line-height: calc(var(--box-height) - 1px);
+      vertical-align: middle;
+      text-align: center;
+      left: var(--active-pause);
+      top: var(--accept-input-top);
+      position: absolute;
+      font-size: small;
+      border: 1px solid black;
+      z-index: 1;
+    }
+  </style>
+</head>
+<body>
+  <div id="bit-a" class="bit-container">
+    <div class="pause-box">
+      Pause A
+    </div>
+    <div class="label-0 label">0</div>
+    <div class="label-1 label">1</div>
+    <div class="bit top">Pause A</div>
+    <div class="bit bottom">Input A</div>
+  </div>
+  <div id="bit-b" class="bit-container">
+    <div class="pause-box">
+      Pause B
+    </div>
+    <div class="label-0 label">0</div>
+    <div class="label-1 label">1</div>
+    <div class="bit top">Pause B</div>
+    <div class="bit bottom">Bit B</div>
+  </div>
+  <div id="bit-c" class="bit-container">
+    <div class="pause-box">
+      Pause C
+    </div>
+    <div class="label-0 label">0</div>
+    <div class="label-1 label">1</div>
+    <div class="bit top">Pause C</div>
+    <div class="bit bottom">Bit C</div>
+  </div>
+  <div id="bit-temp-1" class="bit-container">
+    <div class="pause-box">
+      Pause Temp 1
+    </div>
+    <div class="label-0 label">0</div>
+    <div class="label-1 label">1</div>
+    <div class="bit top">Pause Temp 1</div>
+    <div class="bit bottom">Bit Temp 1</div>
+  </div>
+  <div id="bit-temp-2" class="bit-container">
+    <div class="pause-box">
+      Pause Temp 2
+    </div>
+    <div class="label-0 label">0</div>
+    <div class="label-1 label">1</div>
+    <div class="bit top">Pause Temp 2</div>
+    <div class="bit bottom">Bit Temp 2</div>
+  </div>
+  <div id="bit-temp-3" class="bit-container">
+    <div class="pause-box">
+      Pause Temp 3
+    </div>
+    <div class="label-0 label">0</div>
+    <div class="label-1 label">1</div>
+    <div class="bit top">Pause Temp 3</div>
+    <div class="bit bottom">Bit Temp 3</div>
+  </div>
+  <div id="bit-sum" class="bit-container">
+    <div class="pause-box">
+      Pause Sum
+    </div>
+    <div class="label-0 label">0</div>
+    <div class="label-1 label">1</div>
+    <div class="bit top">Pause Sum</div>
+    <div class="bit bottom">Bit Sum</div>
+  </div>
+  <div id="bit-carry" class="bit-container">
+    <div class="pause-box">
+      Pause Carry
+    </div>
+    <div class="label-0 label">0</div>
+    <div class="label-1 label">1</div>
+    <div class="bit top">Pause Carry</div>
+    <div class="bit bottom">Bit Carry</div>
+  </div>
+  <div id="active-box">MOUSE HERE</div>
+</body>
+</html>

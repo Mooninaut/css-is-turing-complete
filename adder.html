@@ -131,10 +131,10 @@ Carry  = t2 or t3 (11, 12)
       1% { left: 0; top: var(--input-a-home); } /* tock */
       2% { left: 0; top: var(--input-a-home); } /* tick */
       3% { left: var(--active-right); top: var(--perform-output-top); z-index: var(--perform-output-z); } /* tock: xor onto temp1 */
-      4% { left: 0; top: var(--input-a-home); } /* tick */
-      5% { left: 0; top: var(--input-a-home); } /* tock */
-      6% { left: 0; top: var(--input-a-home); } /* tick */
-      7% { left: 0; top: var(--input-a-home); } /* tock */
+      4% { left: 0; top: var(--input-a-home); } /* tick * /
+      5% { left: 0; top: var(--input-a-home); } /* tock * /
+      6% { left: 0; top: var(--input-a-home); } /* tick * /
+      7% { left: 0; top: var(--input-a-home); } /* tock * /
       8% { left: 0; top: var(--input-a-home); } /* tick */
       9% { left: 0; top: var(--input-a-home); } /* tock */
       10% { left: var(--active-left); top: var(--perform-output-top); z-index: var(--perform-output-z); } /* tick */
@@ -146,36 +146,36 @@ Carry  = t2 or t3 (11, 12)
       0% { left: 0; top: var(--input-b-home);} /* tick */
       1% { left: var(--active-right); top: var(--accept-input-top); z-index: var(--perform-output-z); } /* tock: set 0 */
       2% { left: 0; top: var(--input-b-home);} /* tick */
-      3% { left: 0; top: var(--input-b-home); } /* tock*/
+      3% { left: 0; top: var(--input-b-home); } /* tock */
       4% { left: var(--active-left); top: var(--perform-output-top); z-index: var(--perform-output-z); } /* tick: xor onto temp1 */
-      5% { left: 0; top: var(--input-b-home); } /* tock*/
-      6% { left: 0; top: var(--input-b-home); } /* tick */
-      7% { left: 0; top: var(--input-b-home); } /* tock*/
+      5% { left: 0; top: var(--input-b-home); } /* tock * /
+      6% { left: 0; top: var(--input-b-home); } /* tick * /
+      7% { left: 0; top: var(--input-b-home); } /* tock * /
       8% { left: 0; top: var(--input-b-home); } /* tick */
-      9% { left: 0; top: var(--input-b-home); } /* tock*/
+      9% { left: 0; top: var(--input-b-home); } /* tock */
       10% { left: var(--active-left); top: var(--perform-output-top); z-index: var(--perform-output-z); } /* tick */
-      11% { left: 0; top: var(--input-b-home); } /* tock*/
-      12% { left: 0; top: var(--input-b-home); } /* tick */
-      13% { left: 0; top: var(--input-b-home); } /* tock*/
+      11% { left: 0; top: var(--input-b-home); } /* tock * /
+      12% { left: 0; top: var(--input-b-home); } /* tick * /
+      13% { left: 0; top: var(--input-b-home); } /* tock */
     }
     @keyframes bit-c-path {
       0% { left: 0; top: var(--input-c-home);} /* tick */
       1% { left: 0; top: var(--input-c-home); } /* tock */
       2% { left: var(--active-left); top: var(--accept-input-top); z-index: var(--perform-output-z); } /* tick: set 1 */
-      3% { left: 0; top: var(--input-c-home); } /* tock */
+      3% { left: 0; top: var(--input-c-home); } /* tock * /
       4% { left: 0; top: var(--input-c-home); } /* tick */
       5% { left: 0; top: var(--input-c-home); } /* tock */
       6% { left: var(--active-left); top: var(--perform-output-top); z-index: var(--perform-output-z); } /* tick: xor onto Sum */
       7% { left: 0; top: var(--input-c-home); } /* tock */
       8% { left: var(--active-left); top: var(--perform-output-top); z-index: var(--perform-output-z); } /* tick: temp-2 = temp-1 AND c */
-      9% { left: 0; top: var(--input-c-home); } /* tock */
-      10% { left: 0; top: var(--input-c-home); } /* tick */
-      11% { left: 0; top: var(--input-c-home); } /* tock */
+      9% { left: 0; top: var(--input-c-home); } /* tock * /
+      10% { left: 0; top: var(--input-c-home); } /* tick * /
+      11% { left: 0; top: var(--input-c-home); } /* tock * /
       12% { left: 0; top: var(--input-c-home); } /* tick */
       13% { left: 0; top: var(--input-c-home); } /* tock */
     }
     @keyframes bit-temp1-path {
-      0% { left: 0; top: var(--temp-1-home);} /* tick */
+      0% { left: 0; top: var(--temp-1-home);} /* tick * /
       1% { left: 0; top: var(--temp-1-home); } /* tock */
       2% { left: 0; top: var(--temp-1-home); } /* tick */
       3% { left: var(--active-pause); top: var(--accept-input-top); z-index: var(--accept-input-z); } /* tock: accept a xor */
@@ -184,19 +184,19 @@ Carry  = t2 or t3 (11, 12)
       6% { left: 0; top: var(--temp-1-home); } /* tick */
       7% { left: 0; top: var(--temp-1-home); } /* tock */
       8% { left: var(--active-left); top: var(--perform-output-top); z-index: var(--perform-output-z); } /* tick: temp-2 = temp-1 AND c */
-      9% { left: 0; top: var(--temp-1-home); } /* tock */
-      10% { left: 0; top: var(--temp-1-home); } /* tick */
-      11% { left: 0; top: var(--temp-1-home); } /* tock */
-      12% { left: 0; top: var(--temp-1-home); } /* tick */
+      9% { left: 0; top: var(--temp-1-home); } /* tock * /
+      10% { left: 0; top: var(--temp-1-home); } /* tick * /
+      11% { left: 0; top: var(--temp-1-home); } /* tock * /
+      12% { left: 0; top: var(--temp-1-home); } /* tick * /
       13% { left: 0; top: var(--temp-1-home); } /* tock */
     }
 
     @keyframes bit-temp2-path {
-      0% { left: 0; top: var(--temp-2-home);} /* tick */
-      1% { left: 0; top: var(--temp-2-home); } /* tock */
-      2% { left: 0; top: var(--temp-2-home);} /* tick */
-      3% { left: 0; top: var(--temp-2-home); } /* tock */
-      4% { left: 0; top: var(--temp-2-home);} /* tick */
+      0% { left: 0; top: var(--temp-2-home); } /* tick * /
+      1% { left: 0; top: var(--temp-2-home); } /* tock * /
+      2% { left: 0; top: var(--temp-2-home); } /* tick * /
+      3% { left: 0; top: var(--temp-2-home); } /* tock * /
+      4% { left: 0; top: var(--temp-2-home); } /* tick * /
       5% { left: 0; top: var(--temp-2-home); } /* tock */
       6% { left: 0; top: var(--temp-2-home); } /* tick */
       7% { left: var(--active-left); top: var(--accept-input-top); z-index: var(--accept-input-z); } /* tock: set 0 */
@@ -209,13 +209,13 @@ Carry  = t2 or t3 (11, 12)
     }
 
     @keyframes bit-temp3-path {
-      0% { left: 0; top: var(--temp-3-home);} /* tick */
-      1% { left: 0; top: var(--temp-3-home); } /* tock */
-      2% { left: 0; top: var(--temp-3-home);} /* tick */
-      3% { left: 0; top: var(--temp-3-home); } /* tock */
-      4% { left: 0; top: var(--temp-3-home);} /* tick */
-      5% { left: 0; top: var(--temp-3-home); } /* tock */
-      6% { left: 0; top: var(--temp-3-home); } /* tick */
+      0% { left: 0; top: var(--temp-3-home); } /* tick * /
+      1% { left: 0; top: var(--temp-3-home); } /* tock * /
+      2% { left: 0; top: var(--temp-3-home); } /* tick * /
+      3% { left: 0; top: var(--temp-3-home); } /* tock * /
+      4% { left: 0; top: var(--temp-3-home); } /* tick * /
+      5% { left: 0; top: var(--temp-3-home); } /* tock * /
+      6% { left: 0; top: var(--temp-3-home); } /* tick * /
       7% { left: 0; top: var(--temp-3-home); } /* tock */
       8% { left: 0; top: var(--temp-3-home); } /* tick */
       9% { left: var(--active-left); top: var(--accept-input-top); z-index: var(--accept-input-z); } /* tock */
@@ -226,32 +226,32 @@ Carry  = t2 or t3 (11, 12)
     }
 
     @keyframes bit-sum-path {
-      0% { left: 0; top: var(--sum-home);} /* tick */
-      1% { left: 0; top: var(--sum-home); } /* tock */
-      2% { left: 0; top: var(--sum-home); } /* tick */
+      0% { left: 0; top: var(--sum-home); } /* tick * /
+      1% { left: 0; top: var(--sum-home); } /* tock * /
+      2% { left: 0; top: var(--sum-home); } /* tick * /
       3% { left: 0; top: var(--sum-home); } /* tock */
       4% { left: 0; top: var(--sum-home); } /* tick */
       5% { left: var(--active-pause); top: var(--accept-input-top); z-index: var(--accept-input-z); } /* tock: accept a xor */
       6% { left: var(--active-pause); top: var(--accept-input-top); z-index: var(--accept-input-z); } /* tick: accept b xor */
-      7% { left: 0; top: var(--sum-home); } /* tock */
-      8% { left: 0; top: var(--sum-home);} /* tick */
-      9% { left: 0; top: var(--sum-home); } /* tock */
-      10% { left: 0; top: var(--sum-home); } /* tick */
-      11% { left: 0; top: var(--sum-home); } /* tock */
-      12% { left: 0; top: var(--sum-home); } /* tick */
+      7% { left: 0; top: var(--sum-home); } /* tock * /
+      8% { left: 0; top: var(--sum-home); } /* tick * /
+      9% { left: 0; top: var(--sum-home); } /* tock * /
+      10% { left: 0; top: var(--sum-home); } /* tick * /
+      11% { left: 0; top: var(--sum-home); } /* tock * /
+      12% { left: 0; top: var(--sum-home); } /* tick * /
       13% { left: 0; top: var(--sum-home); } /* tock */
     }
 
     @keyframes bit-carry-path {
-      0% { left: 0; top: var(--carry-home);} /* tick */
-      1% { left: 0; top: var(--carry-home); } /* tock */
-      2% { left: 0; top: var(--carry-home); } /* tick */
-      3% { left: 0; top: var(--carry-home); } /* tock */
-      4% { left: 0; top: var(--carry-home); } /* tick */
-      5% { left: 0; top: var(--carry-home); } /* tock */
-      6% { left: 0; top: var(--carry-home); } /* tick */
-      7% { left: 0; top: var(--carry-home); } /* tock */
-      8% { left: 0; top: var(--carry-home);} /* tick */
+      0% { left: 0; top: var(--carry-home); } /* tick * /
+      1% { left: 0; top: var(--carry-home); } /* tock * /
+      2% { left: 0; top: var(--carry-home); } /* tick * /
+      3% { left: 0; top: var(--carry-home); } /* tock * /
+      4% { left: 0; top: var(--carry-home); } /* tick * /
+      5% { left: 0; top: var(--carry-home); } /* tock * /
+      6% { left: 0; top: var(--carry-home); } /* tick * /
+      7% { left: 0; top: var(--carry-home); } /* tock * /
+      8% { left: 0; top: var(--carry-home); } /* tick * /
       9% { left: 0; top: var(--carry-home); } /* tock */
       10% { left: 0; top: var(--carry-home); } /* tick */
       11% { left: var(--active-right); top: var(--accept-input-top); z-index: var(--accept-input-z); } /* tock */

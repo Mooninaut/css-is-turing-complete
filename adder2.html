@@ -51,22 +51,30 @@
        read-if-0 |    read-if-1
 
     AND
-    set output to 0, inputs' read-if-1 (right) over output's write-1-if-0 (right)
+    output's write-0-if-1 (left),
+    inputs' read-if-1 (right) over output's write-1-if-0 (right) 0: 0 0, 1: 0 1
 
     NAND
-    set output to 1, inputs' read-if-1 (right) over output's write-0-if-1 (left)
+    output's write-1-if-0 (right),
+    inputs' read-if-1 (right) over output's write-0-if-1 (left) 0: 1 1, 1: 1 0
 
     OR
-    set output to 1, inputs' read-if-0 (left) over output's write-0-if-1 (left) 0: 0 1, 1: 1 1
+    output's write-1-if-0 (right),
+    inputs' read-if-0 (left) over output's write-0-if-1 (left) 0: 0 1, 1: 1 1
 
     NOR
-    set output to 0, inputs' read-if-0 (left) over output's write-1-if-0 (right) 0: 1 0, 1: 0 0
+    output's write-0-if-1 (left),
+    inputs' read-if-0 (left) over output's write-1-if-0 (right) 0: 1 0, 1: 0 0
 
-    XOR
-    input's read-if-1 (right) over output's MOVE
+    XOR (NEQ)
+    output's write-1-if-0 (right),
+    inputs' read-if-1 (right) over output's write-0-if-1 (left) [NAND]
+    inputs' read-if-0 (left) over output's write-0-if-1 (left) [OR]
 
-    NXOR
-    input's read-if-0 (left) over output's MOVE
+    NXOR (EQ)
+    output's write-0-if-1 (left),
+    inputs' read-if-1 (right) over output's write-1-if-0 (right) [AND]
+    inputs' read-if-0 (left) over output's write-1-if-0 (right) [NOR]
 
     SET 0
     output's write-0-if-1 (left)
@@ -78,6 +86,19 @@
     SET 0 then XOR
     SET 1 then NXOR
     read-if-0 over write-0-if-1 then read-if-1 over write-1-if-0
+
+    Problem: Hovering MOVE for one "tick" is unreliable, and can result in
+    the bit remaining in the same place because it registered hovering for
+    0.99s (or 59/60s?) instead of 1s
+
+    Need a 100% reliable way to either flip a bit or set c=a^b
+    set output to 1,
+    inputs' read-if-1 over output's write-0-if-1 (NAND)
+    inputs' read-if-0 over output's write-0-if-1 (OR)
+    if both are 0 or both are 1, output = 0
+    if one is 0 and one is 1, c = 1
+
+
 
 -->
   <style>
@@ -122,14 +143,16 @@
   5% { left: 0; top: var(--a-home); z-index: 0; }
   6% { left: 0; top: var(--a-home); z-index: 0; }
   7% { left: 0; top: var(--a-home); z-index: 0; }
-  8% { left: var(--read-from-if-1); top: var(--perform-output-top); z-index: var(--perform-output-z); }
-  9% { left: 0; top: var(--a-home); z-index: 0; }
-  10% { left: 0; top: var(--a-home); z-index: 0; }
+  8% { left: 0; top: var(--a-home); z-index: 0; }
+  9% { left: var(--read-from-if-1); top: var(--perform-output-top); z-index: var(--perform-output-z); }
+  10% { left: var(--read-from-if-0); top: var(--perform-output-top); z-index: var(--perform-output-z); }
   11% { left: 0; top: var(--a-home); z-index: 0; }
   12% { left: 0; top: var(--a-home); z-index: 0; }
-  13% { left: var(--read-from-if-1); top: var(--perform-output-top); z-index: var(--perform-output-z); }
+  13% { left: 0; top: var(--a-home); z-index: 0; }
   14% { left: 0; top: var(--a-home); z-index: 0; }
-  15% { left: 0; top: var(--a-home); z-index: 0; }
+  15% { left: var(--read-from-if-1); top: var(--perform-output-top); z-index: var(--perform-output-z); }
+  16% { left: 0; top: var(--a-home); z-index: 0; }
+  17% { left: 0; top: var(--a-home); z-index: 0; }
 }
 @keyframes b-path {
   0% { left: 0; top: var(--b-home); z-index: 0; }
@@ -142,12 +165,14 @@
   7% { left: 0; top: var(--b-home); z-index: 0; }
   8% { left: 0; top: var(--b-home); z-index: 0; }
   9% { left: var(--read-from-if-1); top: var(--perform-output-top); z-index: var(--perform-output-z); }
-  10% { left: 0; top: var(--b-home); z-index: 0; }
+  10% { left: var(--read-from-if-0); top: var(--perform-output-top); z-index: var(--perform-output-z); }
   11% { left: 0; top: var(--b-home); z-index: 0; }
   12% { left: 0; top: var(--b-home); z-index: 0; }
-  13% { left: var(--read-from-if-1); top: var(--perform-output-top); z-index: var(--perform-output-z); }
+  13% { left: 0; top: var(--b-home); z-index: 0; }
   14% { left: 0; top: var(--b-home); z-index: 0; }
-  15% { left: 0; top: var(--b-home); z-index: 0; }
+  15% { left: var(--read-from-if-1); top: var(--perform-output-top); z-index: var(--perform-output-z); }
+  16% { left: 0; top: var(--b-home); z-index: 0; }
+  17% { left: 0; top: var(--b-home); z-index: 0; }
 }
 @keyframes c-path {
   0% { left: 0; top: var(--c-home); z-index: 0; }
@@ -161,11 +186,13 @@
   8% { left: 0; top: var(--c-home); z-index: 0; }
   9% { left: 0; top: var(--c-home); z-index: 0; }
   10% { left: 0; top: var(--c-home); z-index: 0; }
-  11% { left: var(--read-from-if-1); top: var(--perform-output-top); z-index: var(--perform-output-z); }
+  11% { left: 0; top: var(--c-home); z-index: 0; }
   12% { left: var(--read-from-if-1); top: var(--perform-output-top); z-index: var(--perform-output-z); }
-  13% { left: 0; top: var(--c-home); z-index: 0; }
-  14% { left: 0; top: var(--c-home); z-index: 0; }
+  13% { left: var(--read-from-if-0); top: var(--perform-output-top); z-index: var(--perform-output-z); }
+  14% { left: var(--read-from-if-1); top: var(--perform-output-top); z-index: var(--perform-output-z); }
   15% { left: 0; top: var(--c-home); z-index: 0; }
+  16% { left: 0; top: var(--c-home); z-index: 0; }
+  17% { left: 0; top: var(--c-home); z-index: 0; }
 }
 @keyframes temp-1-path {
   0% { left: 0; top: var(--temp-1-home); z-index: 0; }
@@ -176,14 +203,16 @@
   5% { left: 0; top: var(--temp-1-home); z-index: 0; }
   6% { left: 0; top: var(--temp-1-home); z-index: 0; }
   7% { left: 0; top: var(--temp-1-home); z-index: 0; }
-  8% { left: var(--active-move); top: var(--accept-input-top); z-index: var(--accept-input-z); }
-  9% { left: var(--active-move); top: var(--accept-input-top); z-index: var(--accept-input-z); }
-  10% { left: var(--read-from-if-1); top: var(--perform-output-top); z-index: var(--perform-output-z); }
+  8% { left: var(--write-1-if-0); top: var(--accept-input-top); z-index: var(--accept-input-z); }
+  9% { left: var(--write-0-if-1); top: var(--accept-input-top); z-index: var(--accept-input-z); }
+  10% { left: var(--write-0-if-1); top: var(--accept-input-top); z-index: var(--accept-input-z); }
   11% { left: 0; top: var(--temp-1-home); z-index: 0; }
   12% { left: var(--read-from-if-1); top: var(--perform-output-top); z-index: var(--perform-output-z); }
-  13% { left: 0; top: var(--temp-1-home); z-index: 0; }
-  14% { left: 0; top: var(--temp-1-home); z-index: 0; }
+  13% { left: var(--read-from-if-0); top: var(--perform-output-top); z-index: var(--perform-output-z); }
+  14% { left: var(--read-from-if-1); top: var(--perform-output-top); z-index: var(--perform-output-z); }
   15% { left: 0; top: var(--temp-1-home); z-index: 0; }
+  16% { left: 0; top: var(--temp-1-home); z-index: 0; }
+  17% { left: 0; top: var(--temp-1-home); z-index: 0; }
 }
 @keyframes temp-2-path {
   0% { left: 0; top: var(--temp-2-home); z-index: 0; }
@@ -198,10 +227,12 @@
   9% { left: 0; top: var(--temp-2-home); z-index: 0; }
   10% { left: 0; top: var(--temp-2-home); z-index: 0; }
   11% { left: 0; top: var(--temp-2-home); z-index: 0; }
-  12% { left: var(--write-1-if-0); top: var(--accept-input-top); z-index: var(--accept-input-z); }
+  12% { left: 0; top: var(--temp-2-home); z-index: 0; }
   13% { left: 0; top: var(--temp-2-home); z-index: 0; }
-  14% { left: var(--read-from-if-0); top: var(--perform-output-top); z-index: var(--perform-output-z); }
+  14% { left: var(--write-1-if-0); top: var(--accept-input-top); z-index: var(--accept-input-z); }
   15% { left: 0; top: var(--temp-2-home); z-index: 0; }
+  16% { left: var(--read-from-if-0); top: var(--perform-output-top); z-index: var(--perform-output-z); }
+  17% { left: 0; top: var(--temp-2-home); z-index: 0; }
 }
 @keyframes temp-3-path {
   0% { left: 0; top: var(--temp-3-home); z-index: 0; }
@@ -217,9 +248,11 @@
   10% { left: 0; top: var(--temp-3-home); z-index: 0; }
   11% { left: 0; top: var(--temp-3-home); z-index: 0; }
   12% { left: 0; top: var(--temp-3-home); z-index: 0; }
-  13% { left: var(--write-1-if-0); top: var(--accept-input-top); z-index: var(--accept-input-z); }
-  14% { left: var(--read-from-if-0); top: var(--perform-output-top); z-index: var(--perform-output-z); }
-  15% { left: 0; top: var(--temp-3-home); z-index: 0; }
+  13% { left: 0; top: var(--temp-3-home); z-index: 0; }
+  14% { left: 0; top: var(--temp-3-home); z-index: 0; }
+  15% { left: var(--write-1-if-0); top: var(--accept-input-top); z-index: var(--accept-input-z); }
+  16% { left: var(--read-from-if-0); top: var(--perform-output-top); z-index: var(--perform-output-z); }
+  17% { left: 0; top: var(--temp-3-home); z-index: 0; }
 }
 @keyframes sum-path {
   0% { left: 0; top: var(--sum-home); z-index: 0; }
@@ -232,12 +265,14 @@
   7% { left: 0; top: var(--sum-home); z-index: 0; }
   8% { left: 0; top: var(--sum-home); z-index: 0; }
   9% { left: 0; top: var(--sum-home); z-index: 0; }
-  10% { left: var(--active-move); top: var(--accept-input-top); z-index: var(--accept-input-z); }
-  11% { left: var(--active-move); top: var(--accept-input-top); z-index: var(--accept-input-z); }
-  12% { left: 0; top: var(--sum-home); z-index: 0; }
-  13% { left: 0; top: var(--sum-home); z-index: 0; }
+  10% { left: 0; top: var(--sum-home); z-index: 0; }
+  11% { left: var(--write-1-if-0); top: var(--accept-input-top); z-index: var(--accept-input-z); }
+  12% { left: var(--write-0-if-1); top: var(--accept-input-top); z-index: var(--accept-input-z); }
+  13% { left: var(--write-0-if-1); top: var(--accept-input-top); z-index: var(--accept-input-z); }
   14% { left: 0; top: var(--sum-home); z-index: 0; }
   15% { left: 0; top: var(--sum-home); z-index: 0; }
+  16% { left: 0; top: var(--sum-home); z-index: 0; }
+  17% { left: 0; top: var(--sum-home); z-index: 0; }
 }
 @keyframes carry-path {
   0% { left: 0; top: var(--carry-home); z-index: 0; }
@@ -254,8 +289,10 @@
   11% { left: 0; top: var(--carry-home); z-index: 0; }
   12% { left: 0; top: var(--carry-home); z-index: 0; }
   13% { left: 0; top: var(--carry-home); z-index: 0; }
-  14% { left: var(--write-0-if-1); top: var(--accept-input-top); z-index: var(--accept-input-z); }
+  14% { left: 0; top: var(--carry-home); z-index: 0; }
   15% { left: 0; top: var(--carry-home); z-index: 0; }
+  16% { left: var(--write-0-if-1); top: var(--accept-input-top); z-index: var(--accept-input-z); }
+  17% { left: 0; top: var(--carry-home); z-index: 0; }
 }
 
     @keyframes bit-move {

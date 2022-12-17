@@ -5,42 +5,56 @@ def format_value(v):
     if re.match(r'^\d', v):
         return v
     return f'var(--{v})'
+def dest(name: str, value: int):
+    return (name, 'dest', value)
+def src(name: str, value: int):
+    return (name, 'src', value)
+
 # XOR: C=A^B ->
 #   (('C', 'dest', 1),),
 #   (('C', 'dest', 0), ('A', 'src', 1), ('B', 'src', 1)),
 #   (('C', 'dest', 0), ('A', 'src', 0), ('B', 'src', 0)),
+def doXor(output: str, input1: str, input2: str):
+    return (
+        (dest(output, 1),),
+        (dest(output, 0), src(input1, 1), src(input2, 1)),
+        (dest(output, 0), src(input1, 0), src(input2, 0)),
+    )
+
+def doAnd(output: str, input1: str, input2: str):
+    return (
+        (dest(output, 0),),
+        (dest(output, 1), src(input1, 1), src(input2, 1))
+    )
+
+def doOr(output: str, input1: str, input2: str):
+    return (
+        (dest(output, 1),),
+        (dest(output, 0), src(input1, 0), src(input2, 0))
+    )
+def doSet(name: str, value: int):
+    return (dest(name, value),)
+
 # AND
 #   
 # OR
-commands = (
+program = (
     # init
-    (('a', 'dest', 1),),
-    (('b', 'dest', 1),),
-    (('c', 'dest', 1),),
-    (('temp-1', 'dest', 0),),
-    (('temp-2', 'dest', 0),),
-    (('temp-3', 'dest', 0),),
-    (('sum', 'dest', 0),),
-    (('carry', 'dest', 1),),
-    # temp-1 = a XOR b
-    (('temp-1', 'dest', 1),),
-    (('temp-1', 'dest', 0), ('a', 'src', 1), ('b', 'src', 1)),
-    (('temp-1', 'dest', 0), ('a', 'src', 0), ('b', 'src', 0)),
-    # sum = temp-1 XOR c
-    (('sum', 'dest', 1),),
-    (('sum', 'dest', 0), ('temp-1', 'src', 1), ('c', 'src', 1)),
-    (('sum', 'dest', 0), ('temp-1', 'src', 0), ('c', 'src', 0)),
-    # temp-2 = temp-1 AND c
-    (('temp-2', 'dest', 1), ('temp-1', 'src', 1), ('c', 'src', 1)),
-    # temp-3 = a AND b
-    (('temp-3', 'dest', 1), ('a', 'src', 1), ('b', 'src', 1)),
-    # carry = temp-2 OR temp-3
-    (('carry', 'dest', 0), ('temp-2', 'src', 0), ('temp-3', 'src', 0)),
+    doSet('a', 1),
+    doSet('b', 1),
+    doSet('c', 1),
+    # add
+    *doXor('temp-1', 'a', 'b'),
+    *doXor('sum', 'temp-1', 'c'),
+    # carry
+    *doAnd('temp-2', 'temp-1', 'c'),
+    *doAnd('temp-3', 'a', 'b'),
+    *doOr('carry', 'temp-2', 'temp-3'),
     tuple()
 )
 
 keyframes = {}
-for index, items in enumerate(commands):
+for index, items in enumerate(program):
     # print(index, items)
     for command in items:
         # print(index, command)
@@ -59,10 +73,10 @@ for index, items in enumerate(commands):
             else:
                 current['left'] = 'write-1-if-0'
 
-        elif command[1] == 'move':
-            current['top'] = 'accept-input-top'
-            current['z-index'] = 'accept-input-z'
-            current['left'] = 'active-move'
+        # elif command[1] == 'move':
+        #     current['top'] = 'accept-input-top'
+        #     current['z-index'] = 'accept-input-z'
+        #     current['left'] = 'active-move'
 
         elif command[1] == 'src':
             current['top'] = 'perform-output-top'
@@ -74,15 +88,17 @@ for index, items in enumerate(commands):
                 current['left'] = 'read-from-if-1'
         # print(index, name, percent, current)
 
+# TODO: keyhole optimization: skip frame if same as previous and next
 for name, frames in keyframes.items():
     print(f'@keyframes {name}-path {{')
-    for index in range(len(commands)):
+    for index in range(len(program)):
         percent = f'{index}%'
         frames.setdefault(percent, {
             'left': '0',
             'top': f'{name}-home',
             'z-index': '0'
         })
+
         frame = frames[percent]
         left = format_value(frame['left'])
         top = format_value(frame['top'])

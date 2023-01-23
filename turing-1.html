@@ -4,125 +4,248 @@
         <title>2-state 2-symbol Turing Machine</title>
     <style>
         :root {
-            --size: 100px;
+            --quarter-size: 25px;
+            --half-size: calc(2 * var(--quarter-size));
+            --size: calc(4 * var(--quarter-size));
+            --third-size: calc(var(--size) / 3);
             --cells: 8;
+            --states: 4;
+            --mouse-top: var(--size);
+            --mouse-left: calc(2 * var(--size));
+            --duration: 5s;
+            --delay: 5s;
         }
         div {
             margin: 0;
             padding: 0;
             border: 0;
             text-align: center;
-            line-height: calc(var(--size) / 2);
+            line-height: var(--third-size);
         }
-        h1, h2, h3 {
+        h1, h2, h3, h4 {
             width: var(--size);
-            line-height: calc(var(--size) / 3);
+            height: var(--half-size);
+            line-height: var(--quarter-size);
+            background-color: lightyellow;
+            margin: 0;
         }
         .tape-cell {
             width: var(--size);
             height: var(--size);
-
-            border: 1px solid black;
             margin-right: -1px;
             margin-bottom: -1px;
-            background-color: orange;
             pointer-events: none;
-
+            border-right: 1px black solid;
+            border-bottom: 1px black solid;
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            grid-template-rows: 1fr 1fr;
+            grid-template-columns: repeat(2, var(--half-size));
+            grid-template-rows: repeat(2, var(--half-size));
             grid-row: 2;
         }
-        .tape-cell * {
-            pointer-events: all;
-            
-        }
         @keyframes bit {
-            from { grid-column: 2; content: "0"; }
-            to { grid-column: 1; content: "1"; }
+            from { grid-column: 2; }
+            to { grid-column: 1; }
         }
         .bit {
             grid-column: 2;
             grid-row: 2;
             animation: bit 0.01s forwards steps(1) paused;
             z-index: 1;
-            background-color: white;
+            background-color: lightgreen;
+            margin-left: 1px;
+            pointer-events: initial;
         }
         .write-0:hover ~ .bit,
-        .write-state-0:hover ~ .state-bit,
-        .write-symbol-0:hover ~ .symbol-bit,
-        .write-state-0:hover ~ .state-container > .symbol-container:first-child,
-        .write-symbol-0:hover ~ .state-container > .symbol-container > *:first-child {
+        #write-state-0:hover ~ .state-bit,
+        #write-symbol-0:hover ~ .symbol-bit,
+        #write-state-0:hover ~ .state-container > .symbol-container:first-child,
+        #write-symbol-0:hover ~ .state-container > .symbol-container > *:first-child {
             animation: none;
         }
         .write-1:hover ~ .bit,
-        .write-state-1:hover ~ .state-bit,
-        .write-symbol-1:hover ~ .symbol-bit,
-        .write-state-1:hover ~ .state-container > .symbol-container:first-child,
-        .write-symbol-1:hover ~ .state-container > .symbol-container > *:first-child  {
+        #write-state-1:hover ~ .state-bit,
+        #write-symbol-1:hover ~ .symbol-bit,
+        #write-state-1:hover ~ .state-container > .symbol-container:first-child,
+        #write-symbol-1:hover ~ .state-container > .symbol-container > *:first-child  {
             animation-play-state: running;
         }
         @keyframes move-left {
+            from { left: calc(-3 * var(--size));; }
+            to { left: calc(-1 * var(--size) * (var(--cells) + 3)); }
+        }
+        #tape-left {
+            height: calc(3 * var(--halfsize));
+            width: calc((var(--size)) * var(--cells));
+            position: relative;
+            animation: move-left calc(0.1s * var(--cells)) steps(calc(2 * var(--cells)))/* linear */ both paused;
+            grid-column: 1;
+            grid-row: 3;
+            pointer-events: none;
+        }
+        #tape-left h1 {
+            height: var(--half-size);
+        }
+        @keyframes move-right {
             from { left: 0; }
             to { left: calc(var(--size) * var(--cells)); }
         }
-        .tape-left {
-            height: var(--size);
-            width: calc((var(--size)) * var(--cells));
+        #tape-right {
             position: relative;
-            animation: move-left calc(1s * var(--cells)) steps(var(--cells)) both paused;
-        }
-        @keyframes move-right {
-            from { left: calc(var(--size) * var(--cells)); }
-            to { left: 0; }
-        }
-        .tape-right {
-            height: var(--size);
-            width: calc((var(--size) + 2) * var(--cells));
-            position: relative;
-            animation: move-right calc(1s * var(--cells)) steps(var(--cells)) both paused;
+            animation: move-right calc(0.1s * var(--cells)) steps(calc(2 * var(--cells)))/* linear */ both paused;
             display: grid;
-            grid-template-columns: repeat(var(--cells), 1fr);
-            grid-template-rows: 1fr 1fr;
+            grid-template-columns: repeat(var(--cells), var(--size));
+            grid-template-rows: 0 var(--half-size) var(--size);
+            pointer-events: none;
+        }
+        .blockers {
+            grid-column: 1 / 8;
+            grid-row: 1;
+            height: var(--size);
+            width: calc(var(--cells) * var(--size));
+            display: grid;
+            grid-template-columns: repeat(var(--cells), var(--size));
+            position: relative;
+            top: calc(-1 * var(--size));
+            pointer-events: none;
+            
+        }
+        .blocker {
+            width: var(--half-size);
+            height: var(--size);
+            background-color: purple;
+            pointer-events: initial;
         }
         .write-0, .write-1 {
             background-color: palegoldenrod;
+            margin-bottom: -1px;
+            border-top: 1px solid black;
+            pointer-events: initial;
+        }
+        .write-1 {
+            margin-right: -1px;
+            border-right: 1px solid black;
+        }
+        .write-0 {
+            margin-right: -1px;
+            border-left: 1px solid black;
         }
         .zero {
-            z-index -1;
+            z-index: -1;
             grid-row: 2;
             grid-column: 1;
             pointer-events: none;
+            margin-right: -1px;
+            border-left: 1px solid black;
         }
         .one {
-            z-index -1;
+            z-index: -1;
             grid-row: 2;
             grid-column: 2;
             pointer-events: none;
         }
-        .machine-head {
+        @keyframes machine-head {
+            0% { /* Read tape symbol 0 */
+                left: calc(-7 * var(--half-size));
+                top: var(--half-size);
+                z-index: 1;
+            }
+            5% { /* Read tape symbol 1 */
+                left: calc(-8 * var(--half-size));
+                top: var(--half-size);
+                z-index: 1;
+            }
+            10% { /* Write next state 0 */
+                left: calc(-8 * var(--half-size));
+                top: calc(-1 * var(--half-size));
+                z-index: 1000;
+            }
+            15% { /* Write next state 1 */
+                left: calc(-9 * var(--half-size));
+                top: calc(-1 * var(--half-size));
+                z-index: 1000;
+            }
+            20% { /* Write tape symbol 0 */
+                left: calc(-8 * var(--half-size));
+                top: calc(-4 * var(--half-size));
+                z-index: 1000;
+            }
+            25% { /* Write tape symbol 1 */
+                left: calc(-9 * var(--half-size));
+                top: calc(-4 * var(--half-size));
+                z-index: 1000;
+            }
+            30% { /* Move tape left 1/2 */
+                top: calc(-2 * var(--half-size));
+                left: calc(-8 * var(--half-size));
+                z-index: 1000;
+            }
+            35% { /* Move tape left 2/2 */
+                top: calc(-2 * var(--half-size));
+                left: calc(-8 * var(--half-size));
+                z-index: 1000;
+            }
+            40% { /* Move tape right 1/2 */
+                top: calc(-3 * var(--half-size));
+                left: calc(-8 * var(--half-size));
+                z-index: 1000;
+            }
+            45% { /* Move tape right 2/2 */
+                top: calc(-3 * var(--half-size));
+                left: calc(-8 * var(--half-size));
+                z-index: 1000;
+            }
+            50% { /* Write state 0 */
+                left: calc(-7 * var(--half-size));
+                top: calc(2 * var(--half-size));
+                z-index: 1;
+            }
+            55% { /* Write state 1 */
+                left: calc(-8 * var(--half-size));
+                top: calc(2 * var(--half-size));
+                z-index: 1;
+            }
+            60%, 100% {
+                left: 0;
+                top: 0;
+            }
+        }
+        #machine-head {
             display: flex;
             position: relative;
+            animation: machine-head var(--duration) var(--delay)/* linear */ steps(1) forwards infinite;
+            pointer-events: none;
         }
-        .next-state, .shift, .symbol{
+        .next-state, .next-symbol{
             display: grid;
             grid: 1fr / 1fr 1fr;
+            pointer-events: none;
         }
-        .state-table {
+        #next-shift {
+            height: var(--size);
+        }
+        .shift {
             display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            grid-template-rows: repeat(5, 1fr);
+            grid: 1fr 1fr / 1fr;
+            pointer-events: none;
+        }
+        #state-table {
+            display: grid;
+            grid-template-columns: repeat(5, var(--size));
+            grid-template-rows: repeat(4, var(--half-size)) var(--size) var(--half-size);
+            pointer-events: none;
         }
         .next-yes {
             pointer-events: none;
-            background-color: green;
+            /* background-color: lightgreen; */
+            
         }
         .next-no {
-            pointer-events: all;
+            pointer-events: initial;
+            background-color: darkgray;
         }
         .box {
-            width: calc(var(--size));
-            height: calc(var(--size));
+            width: var(--size);
+            height: var(--half-size);
             background-color: peachpuff;
         }
         .state-zero, .symbol-zero {
@@ -147,16 +270,17 @@
             animation: state-bit 0.01s forwards steps(1) paused;
             grid-column-end: 6;
         }
-        .write-state-0, .write-state-1, .state-bit, .state-zero, .state-one {
+        #write-state-0, #write-state-1, .state-bit, .state-zero, .state-one {
             grid-row: 1;
         }
-        .write-symbol-0, .write-symbol-1, .symbol-bit, .symbol-zero, .symbol-one {
+        #write-symbol-0, #write-symbol-1, .symbol-bit, .symbol-zero, .symbol-one {
             grid-row: 2;
         }
         .state-container {
-            grid-column: 2 / 6;
+            grid-column: 2 / span var(--states);
             display: flex;
             width: 100%;
+            pointer-events: none;
         }
         .state-container > .symbol-container:first-child, .symbol-container > *:first-child {
             animation: order 0.01s forwards steps(1) paused;
@@ -164,27 +288,206 @@
         .symbol-container {
             display: flex;
             width: 100%;
+            pointer-events: none;
         }
         .symbol-container > div {
             width: 100%;
         }
+        #move-left {
+            grid-row: 1;
+            grid-column: 1;
+            line-height: var(--half-size);
+            width: var(--size);
+            height: var(--half-size);
+            background-color: pink;
+            pointer-events: initial;
+        }
+        
+        #move-right {
+            grid-row: 2;
+            grid-column: 1;
+            line-height: var(--half-size);
+            width: var(--size);
+            height: var(--half-size);
+            background-color: pink;
+            pointer-events: initial;
+        }
+
+        #move-left:hover ~ #tape-left,
+        #move-right:hover ~ #tape-left #tape-right {
+            animation-play-state: running;
+        }
+        @keyframes tape {
+            0% { /* Read tape symbol 0 */
+                top: calc(-9 * var(--half-size));
+                left: calc(-6 * var(--half-size));
+                z-index: 1000;
+            }
+            5% { /* Read tape symbol 1 */
+                top: calc(-9 * var(--half-size));
+                left: calc(-7 * var(--half-size));
+                z-index: 1000;
+            }
+            10%, 15%, 50%, 100% {
+                top: 0;
+                left: 0;
+                z-index: 1;
+            }
+            20% { /* Write tape symbol 0 */
+                top: calc(-8 * var(--half-size));
+                left: calc(-6 * var(--half-size));
+                z-index: 1;
+            }
+            25% { /* Write tape symbol 1 */
+                top: calc(-8 * var(--half-size));
+                left: calc(-7 * var(--half-size));
+                z-index: 1;
+            }
+            30% { /* Move tape left 1/2 */
+                top: calc(-5 * var(--half-size));
+                left: calc(-7 * var(--half-size));
+                z-index: 1;
+            }
+            35% { /* Move tape left 2/2 */
+                top: calc(-5 * var(--half-size));
+                left: calc(-6 * var(--half-size));
+                z-index: 1;
+            }
+            40% { /* Move tape right 1/2 */
+                top: calc(-6 * var(--half-size));
+                left: calc(-7 * var(--half-size));
+                z-index: 1;
+            }
+            45% { /* Move tape right 2/2 */
+                top: calc(-6 * var(--half-size));
+                left: calc(-6 * var(--half-size));
+                z-index: 1;
+            }
+        }
+        #tape {
+            display: grid;
+            grid-template-rows: repeat(2, var(--half-size)) calc(3 * var(--half-size));
+            grid-template-columns: repeat(2, var(--half-size)) 1fr;
+            position: relative;
+            pointer-events: none;
+            width: calc(var(--cells) * var(--size));
+            animation: tape var(--duration) var(--delay) /* linear */ steps(1) forwards infinite;
+        }
+        .tape-label {
+            grid-row: 2;
+        }
+        #tape-right .tape-cell {
+            grid-row: 3;
+        }
+        body {
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            margin-left: calc(5 * var(--size));
+        }
+        .current-state {
+            pointer-events: initial;
+        }
+        .current-symbol {
+            pointer-events: initial;
+        }
+        @keyframes wiggle {
+            from { height: var(--half-size); }
+            to { height: calc(var(--half-size) - 1px); }
+        }
+        #mouse-here {
+            position: absolute;
+            top: var(--mouse-top);
+            left: var(--mouse-left);
+            height: var(--half-size);
+            width: var(--half-size);
+            background-color: gray;
+            animation: wiggle 1s linear infinite alternate;
+            z-index: -1;
+        }
+        @keyframes next-state-register {
+            0%, 5%, 20%, 60%, 100% {
+                top: calc(2 * var(--size));
+                left: calc(2 * var(--size));
+                z-index: 1;
+            }
+            10% { /* Write next state 0 */
+                top: var(--mouse-top);
+                left: calc(var(--mouse-left) - 2 * var(--half-size));
+                z-index: 1;
+            }
+            15% { /* Write next state 1 */
+                top: var(--mouse-top);
+                left: calc(var(--mouse-left) - 3 * var(--half-size));
+                z-index: 1;
+            }
+            50% { /* Write state 0 */
+                top: calc(var(--mouse-top) - var(--half-size));
+                left: calc(var(--mouse-left) - 2 * var(--half-size));
+                z-index: 1000;
+            }
+            55% { /* Write state 1 */
+                top: calc(var(--mouse-top) - var(--half-size));
+                left: calc(var(--mouse-left) - 3 * var(--half-size));
+                z-index: 1000;
+            }
+
+        }
+        #next-state-register {
+            position: absolute;
+            top: calc(2 * var(--size));
+            left: calc(2 * var(--size));
+            display: flex;
+            pointer-events: none;
+            animation: next-state-register var(--duration) var(--delay) steps(1) forwards infinite;
+        }
+        #next-state-register-label {
+            height: var(--size);
+        }
     </style>
     </head>
+    <!--
+        Tape symbol -> current symbol
+            Read tape symbol 0 -- 0 0%
+            Read tape symbol 1 -- 1 5%
+        Next state -> temp state
+            Next state 0 over temp state write 0 -- 2 10%
+            Next state 1 over temp state write 1 -- 3 15%
+        Next symbol -> tape symbol
+            Write tape symbol 0 -- 4 20%
+            Write tape symbol 1 -- 5 25%
+        Next shift -> move tape
+            Move tape left 1/2 -- Next shift L over tape L(r) -- 6 30%
+            Move tape left 2/2 -- Next shift L over tape L(l) -- 7 35%
+            Move tape right 1/2 -- Next shift R over tape R(r) -- 8 40%
+            Move tape right 2/2 -- Next shift R over tape R(l) -- 9 45%
+        Temp state -> current state
+            Temp state read 0 over state write 0 50%
+            Temp state read 1 over state write 1 55%
+    -->
     <body>
-        <div class="machine-head"><h2>HEAD</h2>
+        <h4 id="mouse-here">MOUSE<br>HERE</h4>
+        <div id="next-state-register">
+            <h3 id="next-state-register-label"><br>TEMP<br>STATE</h3>
+            <div class="tape-cell">
+                <div class="write-0">0</div><div class="write-1">1</div><div class="bit"></div>
+                <div class="zero">0</div><div class="one">1</div>
+            </div>
+        </div>
+        <div id="machine-head">
+            <div id="state-table">
+                <h4 id="write-state-0" class="current-state box">STATE<br>0</h4>
+                <h4 id="write-state-1" class="current-state box">STATE<br>1</h4>
+                <h4 class="state-bit box">CURRENT<br>STATE</h4>
+                <h4 class="state-zero box">0</h4>
+                <h4 class="state-one box">1</h4>
 
-            <div class="state-table">
-                <div class="write-state-0 box">0</div>
-                <div class="write-state-1 box">1</div>
-                <div class="state-bit box">STATE</div>
-                <div class="state-zero box">0</div>
-                <div class="state-one box">1</div>
+                <h4 id="write-symbol-0" class="current-symbol box">SYMBOL<br>0</h4>
+                <h4 id="write-symbol-1" class="current-symbol box">SYMBOL<br>1</h4>
+                <h4 class="symbol-bit box">CURRENT<br>SYMBOL</h4>
+                <h4 class="symbol-zero box">0</hr>
+                <h4 class="symbol-one box">1</h4>
 
-                <div class="write-symbol-0 box">0</div>
-                <div class="write-symbol-1 box">1</div>
-                <div class="symbol-bit box">SYMBOL</div>
-                <div class="symbol-zero box">0</div>
-                <div class="symbol-one box">1</div>
                 <h3>STATE<br>TABLE</h3>
                 <div class="state-container">
                     <div class="symbol-container">
@@ -199,79 +502,90 @@
                 <h3>NEXT<br>STATE</h3>
                 <div class="state-container">
                     <div class="symbol-container">
-                        <div class="next-state"><div class="next-yes">0</div><div class="next-no">1</div></div>
-                        <div class="next-state"><div class="next-yes">0</div><div class="next-no">1</div></div>
-                    </div>
-                    <div class="symbol-container">
                         <div class="next-state"><div class="next-no">0</div><div class="next-yes">1</div></div>
+                        <div class="next-state"><div class="next-no">0</div><div class="next-yes">1</div></div>
+                    </div>
+                    <div class="symbol-container">
                         <div class="next-state"><div class="next-yes">0</div><div class="next-no">1</div></div>
+                        <div class="next-state"><div class="next-no">0</div><div class="next-yes">1</div></div>
                     </div>
                 </div>
-                <h3>SHIFT</h3>
+                <h3 id="next-shift"><br>NEXT<br>SHIFT</h3>
                 <div class="state-container">
                     <div class="symbol-container">
-                        <div class="shift"><div class="next-no">LEFT</div><div class="next-yes">RIGHT</div></div>
-                        <div class="shift"><div class="next-no">LEFT</div><div class="next-yes">RIGHT</div></div>
+                        <div class="shift"><div class="next-no">L</div><div class="next-yes">R</div></div>
+                        <div class="shift"><div class="next-yes">L</div><div class="next-no">R</div></div>
                     </div>
                     <div class="symbol-container">
-                        <div class="shift"><div class="next-no">LEFT</div><div class="next-yes">RIGHT</div></div>
-                        <div class="shift"><div class="next-no">LEFT</div><div class="next-yes">RIGHT</div></div>
+                        <div class="shift"><div class="next-yes">L</div><div class="next-no">R</div></div>
+                        <div class="shift"><div class="next-no">L</div><div class="next-no">R</div></div>
                     </div>
                 </div>
-                <h3>SYMBOL</h3>
+                <h3>NEXT<br>SYMBOL</h3>
                 <div class="state-container">
                     <div class="symbol-container">
-                        <div class="symbol"><div class="next-yes">0</div><div class="next-no">1</div></div>
-                        <div class="symbol"><div class="next-yes">0</div><div class="next-no">1</div></div>
+                        <div class="next-symbol"><div class="next-no">0</div><div class="next-yes">1</div></div>
+                        <div class="next-symbol"><div class="next-no">0</div><div class="next-yes">1</div></div>
                     </div>
                     <div class="symbol-container">
-                        <div class="symbol"><div class="next-yes">0</div><div class="next-no">1</div></div>
-                        <div class="symbol"><div class="next-yes">0</div><div class="next-no">1</div></div>
+                        <div class="next-symbol"><div class="next-no">0</div><div class="next-yes">1</div></div>
+                        <div class="next-symbol"><div class="next-no">0</div><div class="next-yes">1</div></div>
                     </div>
-                </div>
-            </div>
-            <div class="next-state">
-                <h3>NEXT<br>STATE</h3>
-                <div class="tape-cell">
-                    <div class="write-0">0</div><div class="write-1">1</div><div class="bit"></div>
-                    <div class="zero">0</div><div class="one">1</div>
                 </div>
             </div>
         </div>
-        <div class="tape-left">
-            <div class="tape-right">
-                <h1>0</h1><h1>1</h1><h1>2</h1><h1>3</h1><h1>4</h1><h1>5</h1><h1>6</h1><h1>7</h1>
-                <div class="tape-cell">
-                    <div class="write-0">0</div><div class="write-1">1</div><div class="bit"></div>
-                    <div class="zero">0</div><div class="one">1</div>
-                </div>
-                <div class="tape-cell">
-                    <div class="write-0">0</div><div class="write-1">1</div><div class="bit"></div>
-                    <div class="zero">0</div><div class="one">1</div>
-                </div>
-                <div class="tape-cell">
-                    <div class="write-0">0</div><div class="write-1">1</div><div class="bit"></div>
-                    <div class="zero">0</div><div class="one">1</div>
-                </div>
-                <div class="tape-cell">
-                    <div class="write-0">0</div><div class="write-1">1</div><div class="bit"></div>
-                    <div class="zero">0</div><div class="one">1</div>
-                </div>
-                <div class="tape-cell">
-                    <div class="write-0">0</div><div class="write-1">1</div><div class="bit"></div>
-                    <div class="zero">0</div><div class="one">1</div>
-                </div>
-                <div class="tape-cell">
-                    <div class="write-0">0</div><div class="write-1">1</div><div class="bit"></div>
-                    <div class="zero">0</div><div class="one">1</div>
-                </div>
-                <div class="tape-cell">
-                    <div class="write-0">0</div><div class="write-1">1</div><div class="bit"></div>
-                    <div class="zero">0</div><div class="one">1</div>
-                </div>
-                <div class="tape-cell">
-                    <div class="write-0">0</div><div class="write-1">1</div><div class="bit"></div>
-                    <div class="zero">0</div><div class="one">1</div>
+        <div id="tape">
+            <div id="move-left">LEFT</div>
+            <div id="move-right">RIGHT</div>
+
+            <div id="tape-left">
+                <div id="tape-right">
+                    <div class="blockers">
+                        <div class="blocker">B</div>
+                        <div class="blocker">B</div>
+                        <div class="blocker">B</div>
+                        <div class="blocker">B</div>
+                        <div class="blocker">B</div>
+                        <div class="blocker">B</div>
+                        <div class="blocker">B</div>
+                        <div class="blocker">B</div>
+                    </div>
+                    <h1 class="tape-label">0</h1><h1 class="tape-label">1</h1>
+                    <h1 class="tape-label">2</h1><h1 class="tape-label">3</h1>
+                    <h1 class="tape-label">4</h1><h1 class="tape-label">5</h1>
+                    <h1 class="tape-label">6</h1><h1 class="tape-label">7</h1>
+                    <div class="tape-cell">
+                        <div class="write-0">0</div><div class="write-1">1</div><div class="bit"></div>
+                        <div class="zero">0</div><div class="one">1</div>
+                    </div>
+                    <div class="tape-cell">
+                        <div class="write-0">0</div><div class="write-1">1</div><div class="bit"></div>
+                        <div class="zero">0</div><div class="one">1</div>
+                    </div>
+                    <div class="tape-cell">
+                        <div class="write-0">0</div><div class="write-1">1</div><div class="bit"></div>
+                        <div class="zero">0</div><div class="one">1</div>
+                    </div>
+                    <div class="tape-cell">
+                        <div class="write-0">0</div><div class="write-1">1</div><div class="bit"></div>
+                        <div class="zero">0</div><div class="one">1</div>
+                    </div>
+                    <div class="tape-cell">
+                        <div class="write-0">0</div><div class="write-1">1</div><div class="bit"></div>
+                        <div class="zero">0</div><div class="one">1</div>
+                    </div>
+                    <div class="tape-cell">
+                        <div class="write-0">0</div><div class="write-1">1</div><div class="bit"></div>
+                        <div class="zero">0</div><div class="one">1</div>
+                    </div>
+                    <div class="tape-cell">
+                        <div class="write-0">0</div><div class="write-1">1</div><div class="bit"></div>
+                        <div class="zero">0</div><div class="one">1</div>
+                    </div>
+                    <div class="tape-cell">
+                        <div class="write-0">0</div><div class="write-1">1</div><div class="bit"></div>
+                        <div class="zero">0</div><div class="one">1</div>
+                    </div>
                 </div>
             </div>
         </div>

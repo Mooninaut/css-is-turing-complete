@@ -1,5 +1,9 @@
 # CSS is Turing Complete
 
+## License
+
+<a href="https://github.com/Mooninaut/css-is-turing-complete">CSS is Turing Complete</a> © 2022-2025 by <a href="https://github.com/Mooninaut/">Clement Cherlin</a> is licensed under <a href="https://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a><img src="https://mirrors.creativecommons.org/presskit/icons/cc.svg" alt=""  width="20" height="20"><img src="https://mirrors.creativecommons.org/presskit/icons/by.svg" alt="" width="20" height="20"><img src="https://mirrors.creativecommons.org/presskit/icons/sa.svg" alt="" width="20" height="20">
+
 ## Introduction
 
 It was, as of October 2022, [considered an open question](https://stackoverflow.com/questions/2497146/is-css-turing-complete) whether or not CSS is Turing complete.

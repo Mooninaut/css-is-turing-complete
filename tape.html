@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+
+<head>
+    <meta charset="utf-8">
+    <title>The Tape</title>
+    <style>
+        :root {
+            --size: 100px;
+            --duration: 2s;
+        }
+
+        @keyframes blip {
+            0% { width: 99vw; }
+            100% { width: 100vw; }
+        }
+        body {
+            width: 100vw;
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+        .backdrop {
+            width: 100vw;
+            height: 100vh;
+            animation-name: blip;
+            animation-duration: 1s;
+            animation-timing-function: linear;
+            animation-iteration-count: infinite;
+            animation-fill-mode: forwards;
+            z-index: 5;
+            background-color: green;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+        div {
+            text-align: center;
+            width: var(--size);
+            height: var(--size);
+            background-color: gray;
+            /* border: black 1px solid; */
+            margin: 0;
+            padding: 0;
+            position: relative;
+        }
+
+        .adder-label {
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: var(--size);
+            width: var(--size);
+            background-color: orange;
+            z-index: 100;
+        }
+        .box {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .adder-block {
+            pointer-events: all;
+            background: gray 50%;
+        }
+        .adder-block:hover {
+            background-color: lightcoral;
+        }
+
+        .adder-open {
+            pointer-events: none;
+        }
+
+        .tape {
+            position: absolute;
+            left: calc(var(--size) * 3);
+            z-index: 100;
+        }
+        .rows {
+            position: absolute;
+            left: 0;
+            top: 0;
+            display: flex;
+            flex-direction: column;
+            width: 100vw;
+            height: 100vh;
+            justify-content: flex-start;
+            align-items: stretch;
+            z-index: 10;
+            background-color: white;
+        }
+        .row {
+            height: var(--size);
+            width: 100%;
+            background-color: aliceblue;
+        }
+        .row:hover {
+            background-color: palegreen;
+        }
+        .offset-left-1 {
+            position: absolute;
+            right: calc(var(--size));
+            background-color: yellow;
+        }
+        .offset-left-2 {
+            position: absolute;
+            right: calc(2 * var(--size));
+            background-color: green;
+        }
+        .offset-right-1 {
+            position: absolute;
+            left: var(--size);
+            background-color: aqua;
+        }
+        .offset-right-2 {
+            position: absolute;
+            left: calc(2 * var(--size));
+            background-color: brown;
+        }
+        .adder-right {
+            left: calc(3 * var(--size));
+        }
+        .bit-container {
+            width: calc(2 * var(--size));
+            display: flex;
+            flex-direction: row;
+            align-items: start;
+            pointer-events: none;
+            background-color: royalblue;
+            top: var(--size);
+            z-index: 100;
+        }
+        .bit-container .bit-cover {
+            position: absolute;
+            background-color: aqua;
+            animation: 1s
+                step-start
+                0s
+                paused
+                'bit-cover';
+            pointer-events: all;
+        }
+        .bit-container .bit-1-side:hover ~ .bit-cover{
+            animation-play-state: running;
+        }
+        .bit-container .bit-0-side:hover ~ .bit-cover{
+            animation: none;
+        }
+        .bit-container .bit-0-side, 
+        .bit-container .bit-1-side {
+            pointer-events: all;
+            height: 50px;
+            max-height: 50px;
+            min-height: 50px;
+            
+            background-color: brown
+        }
+        @keyframes bit-cover {
+            1% {
+                left: 0;
+            }
+            99% {
+                left: var(--size);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="backdrop"></div>
+    <div class="tape">
+        <div class="adder one">
+            <div class="adder-label box"><p>1</p></div>
+            <div class="adder-block box offset-right-1">X</div>
+            <div class="adder-open box offset-right-2">O</div>
+        </div>
+        <div class="adder zero">
+            <div class="adder-label box">0</div>
+            <div class="adder-open box offset-right-1">O</div>
+            <div class="adder-block box offset-right-2">X</div>
+        </div>
+        <div class="adder adder-right one">
+            <div class="adder-label box">1</div>
+            <div class="adder-block box offset-left-2">X</div>
+            <div class="adder-open box offset-left-1">O</div>
+        </div>
+        <div class="adder adder-right zero">
+            <div class="adder-label box">0</div>
+            <div class="adder-open box offset-left-2">O</div>
+            <div class="adder-block box offset-left-1">X</div>
+        </div>
+    </div>
+    <div class="rows">
+        <div class="row">row1</div>
+        <div class="row">row2</div>
+        <div class="row">row3</div>
+        <div class="row">row4</div>
+        <div class="row">row5</div>
+        <div class="row">row6</div>
+        <div class="row">row7</div>
+        <div class="row">row8</div>
+        <div class="row">row9</div>
+        <div class="row">row10</div>
+    </div>
+    <div class="bit-container">
+        <div class="bit-0-side">0</div>
+        <div class="bit-1-side">1</div>
+        <div class="bit-cover">BIT</div>
+    </div>
+</body>
